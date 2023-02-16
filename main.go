@@ -15,9 +15,9 @@ import (
 func main() {
     r := httprouter.New()
     tc := controllers.NewTaskController(dbConnect())
-    r.GET("/todos", tc.GetAll)
+    r.GET("/todo", tc.GetAll)
     r.GET("/todo/:id", tc.GetID)
-    r.POST("/todos", tc.Create)
+    r.POST("/todo", tc.Create)
     r.DELETE("/todo/:id", tc.DeleteID)
     r.POST("/todo/:id", tc.UpdateID)
     http.ListenAndServe(":8080", r)
