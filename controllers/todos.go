@@ -23,8 +23,30 @@ func (tc TaskController) GetAll(w http.ResponseWriter, req *http.Request, _ http
         w.WriteHeader(http.StatusMethodNotAllowed)
         return
     }
-
-    //getting all functionality
+    //Get rows from db
+    rows, err := tc.db.Query("SELECT name, description, expires, priority FROM tasks")
+    if err != nil {
+        log.Fatal(err)
+        return
+    }
+    defer rows.Close()
+    //Scan rows into slice
+    ts := make([]models.Todo, 0)
+    for rows.Next(){
+        t := models.Todo{}
+        if err := rows.Scan(&t.Name, &t.Description, &t.Expires, &t.Priority);err != nil {
+            log.Fatal(err)
+            return
+        }
+        ts = append(ts, t)
+    }
+    tj, err := json.Marshal(ts)
+    if err != nil {
+        log.Fatal(err)
+        return
+    }
+    w.Header().Set("Content-type", "application/json")
+    w.Write(tj)
 }
 
 func (tc TaskController) GetID(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
